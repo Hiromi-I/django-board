@@ -1,5 +1,6 @@
-from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 
 
-def dummy(request):
-    return HttpResponse("dummy")
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = "boards/index.html"
