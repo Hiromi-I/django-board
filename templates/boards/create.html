@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}掲示板{% endblock title %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+    {{ user.username }}
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit">ログアウト</button>
+    </form>
+  {% endif %}
+
+  <h2>仮ページ</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">作成</button>
+  </form>
+{% endblock content %}
