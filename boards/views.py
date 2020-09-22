@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView
 from django.urls import reverse_lazy
 
 from .forms import BoardCreationForm
@@ -16,4 +16,9 @@ class IndexView(LoginRequiredMixin, ListView):
 class CreateBoardView(CreateView):
     form_class = BoardCreationForm
     template_name = "boards/create.html"
+    success_url = reverse_lazy('boards:index')
+
+
+class DeleteBoardView(DeleteView):
+    model = Board
     success_url = reverse_lazy('boards:index')
