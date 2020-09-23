@@ -16,6 +16,8 @@
     <h3>{{ board.name }}</h3>
     <p>{{ board.description }}</p>
 
+    <a href="{% url 'boards:update' board.id %}">編集</a>
+
     <form action="{% url 'boards:delete' board.id %}" method="post">
       {% csrf_token %}
       <button type="submit">削除</button>
