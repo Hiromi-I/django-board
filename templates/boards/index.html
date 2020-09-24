@@ -12,4 +12,16 @@
   {% endif %}
 
   <h2>仮ページ</h2>
+  {% for board in boards %}
+    <h3>{{ board.name }}</h3>
+    <p>{{ board.description }}</p>
+
+    <a href="{% url 'boards:update' board.id %}">編集</a>
+
+    <form action="{% url 'boards:delete' board.id %}" method="post">
+      {% csrf_token %}
+      <button type="submit">削除</button>
+    </form>
+  {% endfor %}
+  <a href="{% url 'boards:create' %}">Boradを作成</a>
 {% endblock content %}
