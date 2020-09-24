@@ -1,0 +1,20 @@
+- model: boards.board
+  pk: 1
+  fields:
+    name: "Django Rest Frameworkについて"
+    description: "DRF(Django Rest Framework)に関するアレコレ。"
+- model: boards.board
+  pk: 2
+  fields:
+    name: "AWSお気に入りサービスは？"
+    description: "Amazon Web Servicesでよく使うサービスについて。"
+- model: boards.board
+  pk: 3
+  fields:
+    name: "AWS vs GCP"
+    description: "パブリッククラウドで有名なAWSとGCPの対決。"
+- model: boards.board
+  pk: 4
+  fields:
+    name: "競技プログラミング難しい。。。"
+    description: "競プロの難しい問題の共有。"
