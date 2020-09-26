@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}掲示板{% endblock title %}
+
+{% block content %}
+  {% if user.is_authenticated %}
+    {{ user.username }}
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit">ログアウト</button>
+    </form>
+  {% endif %}
+
+  <h2>{{ board.name }}</h2>
+
+{% endblock content %}
