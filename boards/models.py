@@ -19,7 +19,8 @@ class Comment(models.Model):
         verbose_name = "comment"
         verbose_name_plural = "comments"
 
-    user = models.ManyToManyField(get_user_model(), related_name="comment")
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
     body = models.CharField(max_length=300)
 
     def __str__(self):
