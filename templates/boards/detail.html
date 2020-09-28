@@ -13,4 +13,14 @@
 
   <h2>{{ board.name }}</h2>
 
+  {% for comment in comments %}
+    <p>{{ comment.body }}</p>
+  {% endfor %}
+
+  <form action="{% url 'boards:detail' board.id %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">投稿</button>
+  </form>
+
 {% endblock content %}
