@@ -13,7 +13,7 @@
 
   <h2>仮ページ</h2>
   {% for board in boards %}
-    <h3>{{ board.name }}</h3>
+    <h3><a href="{% url 'boards:detail' board.id %}">{{ board.name }}</a></h3>
     <p>{{ board.description }}</p>
 
     <a href="{% url 'boards:update' board.id %}">編集</a>
