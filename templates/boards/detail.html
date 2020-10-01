@@ -17,10 +17,38 @@
     <p>{{ comment.body }}</p>
   {% endfor %}
 
-  <form action="{% url 'boards:detail' board.id %}" method="post">
+  <form id="comment-form" action="{% url 'boards:detail' board.id %}" method="post">
     {% csrf_token %}
     {{ form }}
-    <button type="submit">投稿</button>
+    <button id="submit-btn" type="submit">投稿</button>
   </form>
 
 {% endblock content %}
+
+{% block extra_script %}
+<script>
+  const form = document.getElementById("comment-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const getOptions = () => ({
+    method: form.method,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+      'X-CSRFToken': form.csrfmiddlewaretoken.value,
+    },
+    body: JSON.stringify({
+      body: form.body.value,
+      csrfmiddlewaretoken: form.csrfmiddlewaretoken.value,
+    }),
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitBtn.disabled = true;
+
+    fetch(form.action, getOptions()).then(response => {
+      console.log(response.json())
+    });
+  });
+</script>
+{% endblock extra_script %}
