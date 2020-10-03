@@ -1,8 +1,12 @@
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http.response import JsonResponse
 from django.views.generic import ListView
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.shortcuts import resolve_url, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 
 from .forms import BoardCreationForm, CommentCreationForm
 from .models import Board, Comment
@@ -32,23 +36,31 @@ class DeleteBoardView(DeleteView):
     success_url = reverse_lazy('boards:index')
 
 
-class BoardDetailView(CreateView):
-    form_class = CommentCreationForm
-    template_name = "boards/detail.html"
+class BoardDetailView(TemplateView):
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        board_id = self.kwargs.get("pk")
-        context["board"] = get_object_or_404(Board, pk=board_id)
-        context["comments"] = Comment.objects.filter(board__id=board_id)
-        return context
+    def _get_board(self, kwargs):
+        board_id = kwargs.get("pk")
+        return get_object_or_404(Board, pk=board_id)
 
-    def form_valid(self, form):
-        board_id = self.kwargs.get("pk")
-        form.instance.user = self.request.user
-        form.instance.board = get_object_or_404(Board, pk=board_id)
-        return super().form_valid(form)
+    def get(self, request, **kwargs):
+        board = self._get_board(kwargs)
+        context = {
+            "board": board,
+            "comments": Comment.objects.filter(board=board).order_by('id'),
+            "form": CommentCreationForm()
+        }
+        return render(request, "boards/detail.html", context)
 
-    def get_success_url(self):
-        board_id = self.kwargs.get("pk")
-        return resolve_url('boards:detail', pk=board_id)
+    def post(self, request, **kwargs):
+        board = self._get_board(kwargs)
+        data = json.loads(request.body.decode('utf-8'))
+        if data['body']:
+            Comment.objects.create(
+                body=data['body'], board=board, user=self.request.user)
+
+        comments = Comment.objects.filter(board=board).order_by('id')
+        comment_list = [{"id": comment.id,
+                         "body": comment.body,
+                         "user": comment.user.username}
+                        for comment in comments]
+        return JsonResponse(comment_list, safe=False)
