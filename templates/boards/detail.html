@@ -13,14 +13,62 @@
 
   <h2>{{ board.name }}</h2>
 
-  {% for comment in comments %}
-    <p>{{ comment.body }}</p>
-  {% endfor %}
+  <div id="commentListContainer">
+    {% for comment in comments %}
+      <p>{{ comment.body }}</p>
+    {% endfor %}
+  </div>
 
-  <form action="{% url 'boards:detail' board.id %}" method="post">
+  <form id="comment-form" action="{% url 'boards:detail' board.id %}" method="post">
     {% csrf_token %}
     {{ form }}
-    <button type="submit">投稿</button>
+    <button id="submit-btn" type="submit">投稿</button>
   </form>
 
 {% endblock content %}
+
+{% block extra_script %}
+<script>
+  const form = document.getElementById("comment-form");
+  const submitBtn = document.getElementById("submit-btn");
+  const getOptions = () => ({
+    method: form.method,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+      'X-CSRFToken': form.csrfmiddlewaretoken.value,
+    },
+    body: JSON.stringify({
+      body: form.body.value,
+      csrfmiddlewaretoken: form.csrfmiddlewaretoken.value,
+    }),
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(form.action, getOptions());
+      const commentList = await response.json();
+      updateCommentList(commentList);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      form.body.value = "";
+      submitBtn.disabled = false;
+    }
+  });
+
+  function updateCommentList(commentList) {
+    const commentListContainer = document.getElementById("commentListContainer");
+    commentListContainer.textContent = null;
+    
+    commentList.forEach(comment => {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = comment.body;
+      commentListContainer.appendChild(paragraph);
+    });
+  }
+</script>
+{% endblock extra_script %}
